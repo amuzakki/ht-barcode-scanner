@@ -77,10 +77,9 @@
 	<p style="text-align: center;">v.1.6</p>
 
 	<script type="module">
-		import QrScanner from "vendor/qr-scanner/qr-scanner.min.js";
+		import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
 
-		QrScanner.WORKER_PATH =
-			"vendor/qr-scanner/qr-scanner-worker.min.js";
+		QrScanner.WORKER_PATH =	"https://unpkg.com/qr-scanner@1.4.2/qr-scanner-worker.min.js";
 
 		const video = document.getElementById("video");
 		const resultEl = document.getElementById("result");
