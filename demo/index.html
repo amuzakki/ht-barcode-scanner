@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>QR Scanner</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      padding: 20px;
+    }
+    video {
+      width: 100%;
+      max-width: 400px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
+    }
+    #result {
+      margin-top: 15px;
+      padding: 10px;
+      background: #f5f5f5;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Scan QR Code</h2>
+
+  <video id="video"></video>
+
+  <div id="result">Arahkan kamera ke QR Code</div>
+
+  <script type="module">
+    import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
+
+    QrScanner.WORKER_PATH =
+      "https://unpkg.com/qr-scanner@1.4.2/qr-scanner-worker.min.js";
+
+    const video = document.getElementById("video");
+    const resultEl = document.getElementById("result");
+
+    const scanner = new QrScanner(
+      video,
+      result => {
+        console.log("SCAN RESULT:", result.data);
+        resultEl.innerText = "Hasil Scan: " + result.data;
+      },
+      {
+        preferredCamera: "environment",
+        highlightScanRegion: true,
+        highlightCodeOutline: true
+      }
+    );
+
+    scanner.start().then(() => {
+      console.log("Scanner started");
+    }).catch(err => {
+      console.error(err);
+      resultEl.innerText = "Gagal mengakses kamera";
+    });
+  </script>
+
+</body>
+</html>
