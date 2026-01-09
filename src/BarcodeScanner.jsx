@@ -73,7 +73,7 @@ export default function BarcodeScanner() {
 
   return (
     <div style={styles.container}>
-      <h2>Scan Barcode</h2>
+      <h2>Scan Barcode Anda</h2>
 
       <div id="reader" style={styles.camera} />
 
