@@ -40,4 +40,4 @@ function App() {
   return <BarcodeScanner />;
 }
 
-export default App
+export default App;
