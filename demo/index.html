@@ -32,7 +32,7 @@
 
   <div id="result">Arahkan kamera ke QR Code</div>
 
-  <script type="module">
+ <!--  <script type="module">
     import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
 
     QrScanner.WORKER_PATH =
@@ -60,7 +60,69 @@
       console.error(err);
       resultEl.innerText = "Gagal mengakses kamera";
     });
-  </script>
+  </script> -->
+
+  <script type="module">
+  import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
+  QrScanner.WORKER_PATH =
+    "https://unpkg.com/qr-scanner@1.4.2/qr-scanner-worker.min.js";
+
+  const video = document.getElementById("video");
+  const resultEl = document.getElementById("result");
+  const statusEl = document.getElementById("status");
+
+  let lastScan = 0;
+
+  const GAS_URL = "PASTE_URL_GAS_ANDA_DI_SINI";
+
+  const scanner = new QrScanner(
+    video,
+    async result => {
+      const now = Date.now();
+      if (now - lastScan < 2000) return; // anti double scan
+      lastScan = now;
+
+      console.log("SCAN:", result.data);
+      resultEl.innerText = result.data;
+
+      try {
+        const res = await fetch(GAS_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ code: result.data })
+        });
+
+        const data = await res.json();
+        console.log("GAS RESPONSE:", data);
+
+        if (data.status === "success") {
+          statusEl.className = "success";
+          statusEl.innerText = `✅ Berhasil — ${data.nama}`;
+        } else if (data.status === "used") {
+          statusEl.className = "used";
+          statusEl.innerText = `⚠️ Sudah dipakai — ${data.nama}`;
+        } else if (data.status === "not_found") {
+          statusEl.className = "error";
+          statusEl.innerText = "❌ QR Code tidak terdaftar";
+        } else {
+          statusEl.className = "error";
+          statusEl.innerText = "Terjadi kesalahan";
+        }
+
+      } catch (err) {
+        console.error(err);
+        statusEl.className = "error";
+        statusEl.innerText = "Gagal koneksi ke server";
+      }
+    },
+    {
+      preferredCamera: "environment"
+    }
+  );
+
+  scanner.start();
+</script>
+
 
 </body>
 </html>
