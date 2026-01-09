@@ -2,10 +2,13 @@
 <html lang="id">
 <head>
 	<meta charset="UTF-8" />
-	<title>HT QR Scanner</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link href="favicon.png" rel="icon">
 	<meta name="robots" content="noindex, nofollow" />
 	<meta name="googlebot" content="noindex">
+
+	<title>000 QR Scanner</title>
+	<meta name="description" content="QR Code Scanner is the fastest and most user-friendly web application.">
 
 	<style>
 		body {
@@ -66,18 +69,18 @@
 	<video id="video"></video>
 
 	<div id="result">Arahkan kamera ke QR Code</div>
-	<p id="status">Ready to Scan</p>
+	<p id="status">Siap untuk Scanning</p>
 
-	<button id="resetBtn" style="display:none;">Reset Scan</button>
+	<button id="resetBtn" style="display:none;">Scan Lagi</button>
 
 	<hr style="margin-top: 50px;">
 	<p style="text-align: center;">v.1.6</p>
 
 	<script type="module">
-		import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
+		import QrScanner from "vendor/qr-scanner/qr-scanner.min.js";
 
 		QrScanner.WORKER_PATH =
-			"https://unpkg.com/qr-scanner@1.4.2/qr-scanner-worker.min.js";
+			"vendor/qr-scanner/qr-scanner-worker.min.js";
 
 		const video = document.getElementById("video");
 		const resultEl = document.getElementById("result");
@@ -91,7 +94,7 @@
 		const GAS_URL = "https://script.google.com/macros/s/AKfycbzRfh9W7GCC0hXzWdZIgkVKvYDyaynF9euaXc9HUskXcUDvt9BFlcR7wJHF7ZVAdPVW/exec";
 
 		function startScanner() {
-			statusEl.innerHTML = "<span style='font-weight:normal;'>- Ready to Scan -</span>";
+			statusEl.innerHTML = "<span style='font-weight:normal;'>- Siap untuk Scanning -</span>";
 			statusEl.className = "";
 			resultEl.innerText = "Arahkan kamera ke QR Code";
 			resetBtn.style.display = "none";
@@ -134,7 +137,7 @@
 			resultEl.innerText = "QR: " + result.data;
 
 			await stopScanner(); // ⛔ STOP KAMERA SETELAH SCAN
-			statusEl.innerHTML = "<img height='30px' src='https://cdn.pixabay.com/animation/2023/11/09/03/05/03-05-45-320_512.gif'>";
+			statusEl.innerHTML = "<img height='30px' src='assets/image/loading.webp'>";
 
 			try {
 				const response = await fetch(GAS_URL, {
