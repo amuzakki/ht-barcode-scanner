@@ -1,7 +1,7 @@
 {
   "id": "/",
-  "name": "Hello World Kukode",
-  "short_name": "Hello",
+  "name": "Event QR Scanner",
+  "short_name": "QR Scanner",
   "lang": "en-US",
   "start_url": "./index.html",
   "display": "standalone",
