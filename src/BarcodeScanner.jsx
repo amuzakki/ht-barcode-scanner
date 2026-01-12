@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import QrScanner from "qr-scanner";
+import "./styles.css";
 
 QrScanner.WORKER_PATH = "/qr-scanner-worker.min.js";
 
@@ -7,8 +8,9 @@ export default function BarcodeScanner() {
   const videoRef = useRef(null);
   const scannerRef = useRef(null);
 
-  const [result, setResult] = useState("");
+  const [qrValue, setQrValue] = useState("");
   const [status, setStatus] = useState(null);
+  const [scanning, setScanning] = useState(false);
 
   const GAS_URL = import.meta.env.VITE_GAS_URL;
 
@@ -17,17 +19,23 @@ export default function BarcodeScanner() {
     return () => stopScanner();
   }, []);
 
-  const startScanner = () => {
-    setResult("");
+  const startScanner = async () => {
+    setQrValue("");
     setStatus(null);
+    setScanning(true);
 
     scannerRef.current = new QrScanner(
       videoRef.current,
-      handleScan,
-      { preferredCamera: "environment" }
+      onScanSuccess,
+      {
+        preferredCamera: "environment",
+        highlightScanRegion: true,
+        highlightCodeOutline: true
+      }
     );
 
-    scannerRef.current.start();
+    await scannerRef.current.start();
+    console.log("Scanner started");
   };
 
   const stopScanner = async () => {
@@ -35,14 +43,16 @@ export default function BarcodeScanner() {
       await scannerRef.current.stop();
       scannerRef.current.destroy();
       scannerRef.current = null;
+      setScanning(false);
+      console.log("Scanner stopped");
     }
   };
 
-  const handleScan = async (result) => {
-    console.log("SCAN:", result.data);
-    setResult(result.data);
+  const onScanSuccess = async (result) => {
+    console.log("SCAN RESULT:", result.data);
+    setQrValue(result.data);
 
-    await stopScanner();
+    await stopScanner(); // ⛔ stop kamera
 
     try {
       const res = await fetch(GAS_URL, {
@@ -51,31 +61,49 @@ export default function BarcodeScanner() {
       });
 
       const data = await res.json();
-      console.log("GAS:", data);
+      console.log("GAS RESPONSE:", data);
       setStatus(data);
 
-    } catch {
+    } catch (err) {
+      console.error(err);
       setStatus({ status: "error" });
     }
   };
 
   return (
-    <div style={{ textAlign: "center" }}>
+    <div>
       <h2>Scan QR Code</h2>
 
-      {!status && <video ref={videoRef} style={{ width: "100%", maxWidth: 400 }} />}
+      {scanning && (
+        <video ref={videoRef} />
+      )}
 
-      {result && <p><b>QR:</b> {result}</p>}
+      <div id="result">
+        {qrValue ? `QR: ${qrValue}` : "Arahkan kamera ke QR Code"}
+      </div>
 
       {status && (
-        <div>
-          {status.status === "success" && <p style={{ color: "green" }}>Berhasil — {status.nama}</p>}
-          {status.status === "used" && <p style={{ color: "orange" }}>Sudah dipakai — {status.nama}</p>}
-          {status.status === "not_found" && <p style={{ color: "red" }}>QR tidak terdaftar</p>}
-          {status.status === "error" && <p style={{ color: "red" }}>Gagal koneksi</p>}
-
-          <button onClick={startScanner}>Reset</button>
+        <div
+          id="status"
+          className={
+            status.status === "success"
+              ? "success"
+              : status.status === "used"
+              ? "used"
+              : "error"
+          }
+        >
+          {status.status === "success" && `✅ Berhasil — ${status.nama}`}
+          {status.status === "used" && `⚠️ Sudah dipakai — ${status.nama}`}
+          {status.status === "not_found" && "❌ QR Code tidak terdaftar"}
+          {status.status === "error" && "❌ Gagal koneksi ke server"}
         </div>
+      )}
+
+      {status && (
+        <button onClick={startScanner}>
+          Reset Scan
+        </button>
       )}
     </div>
   );
