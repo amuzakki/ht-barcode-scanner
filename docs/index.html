@@ -3,12 +3,24 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-	<link href="favicon.png" rel="icon">
 	<meta name="robots" content="noindex, nofollow" />
 	<meta name="googlebot" content="noindex">
 
-	<title>000 QR Scanner</title>
+	<link rel="icon" href="favicon.png" type="image/x-icon" />
+	<link rel="apple-touch-icon" href="images/hello-icon-152.png">
+
+	<meta name="theme-color" content="white"/>
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black">
+	<meta name="apple-mobile-web-app-title" content="Event QR Scanner">
+	<meta name="msapplication-TileImage" content="images/hello-icon-144.png">
+	<meta name="msapplication-TileColor" content="#FFFFFF">
+
+	<title>Event QR Scanner</title>
 	<meta name="description" content="QR Code Scanner is the fastest and most user-friendly web application.">
+	
+	<link rel="manifest" href="manifest.json">
+	<!-- <link rel="stylesheet" href="css/style.css"> -->
 
 	<style>
 		body {
@@ -76,6 +88,15 @@
 	<hr style="margin-top: 50px;">
 	<p style="text-align: center;">v.1.6</p>
 
+	<script>
+		window.onload = () => {
+			'use strict';
+			if ('serviceWorker' in navigator) {
+				navigator.serviceWorker
+				.register('sw.js');
+			}
+		}
+	</script>
 	<script type="module">
 		import QrScanner from "https://unpkg.com/qr-scanner@1.4.2/qr-scanner.min.js";
 
